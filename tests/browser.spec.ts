@@ -1,0 +1,47 @@
+import {test,expect} from '@playwright/test';
+test('onboarding, simulated recording, persisted journal, rewards and settings',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/');await expect(page.getByRole('button',{name:'Get Started'})).toBeVisible();
+ await page.screenshot({path:'/tmp/snowrun-welcome-desktop.png'});
+ await page.getByRole('button',{name:'Get Started'}).click();
+ await page.getByRole('textbox',{name:'Your name'}).fill('Maci');
+ await page.getByRole('button',{name:'Let’s explore'}).click();
+ await expect(page.getByRole('heading',{name:'Explore the mountain'})).toBeVisible();
+ await expect(page.locator('.trail-row')).toHaveCount(53);
+ await page.getByRole('textbox',{name:'Search runs and lifts'}).fill('Summit');
+ await expect(page.locator('.trail-row')).toHaveCount(1);
+ await page.getByRole('textbox',{name:'Search runs and lifts'}).fill('');
+ await page.waitForTimeout(2500);
+ await page.screenshot({path:'/tmp/snowrun-map-desktop.png'});
+ await page.getByRole('button',{name:'Start a run',exact:true}).click();
+ await expect(page.getByRole('region',{name:'Current recording'})).toBeVisible();
+ await page.waitForTimeout(3200);
+ await page.getByRole('button',{name:'Pause',exact:true}).click();
+ await expect(page.locator('.recording-card')).toContainText('Paused');
+ await page.getByRole('button',{name:'Finish run'}).click();
+ await expect(page.getByRole('heading',{name:'Relive your run'})).toBeVisible();
+ await page.getByRole('button',{name:'Play',exact:true}).click();
+ await page.reload();await page.getByRole('button',{name:'Journal',exact:true}).click();
+ await expect(page.locator('.journal-row')).toHaveCount(1);
+ await page.getByRole('button',{name:'Rewards',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Your milestones'})).toBeVisible();
+ await page.getByRole('button',{name:'Me',exact:true}).click();
+ await expect(page.getByRole('textbox',{name:'Name',exact:true})).toHaveValue('Maci');
+ await page.getByRole('combobox',{name:'Units'}).selectOption('imperial');
+ await page.getByRole('button',{name:'Save preferences'}).click();
+ await page.getByRole('button',{name:'Map',exact:true}).click();
+ await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:'/tmp/snowrun-map-mobile.png'});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ expect(errors).toEqual([]);
+});
+test('saved trail map survives offline reload and duplicate writable tabs are blocked',async({page,context})=>{
+ test.skip(!process.env.PRODUCTION,'Service worker is generated only for production builds.');
+
+ await page.goto('/');await page.getByRole('button',{name:'Get Started'}).click();await page.getByRole('button',{name:'Let’s explore'}).click();
+ await page.getByRole('button',{name:'Save map',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Saved offline',exact:true})).toBeVisible();
+ await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise<void>(resolve=>navigator.serviceWorker.addEventListener('controllerchange',()=>resolve(),{once:true}));});
+ const second=await context.newPage();await second.goto('/');await expect(second.getByText('SnowRun is already open in another tab.',{exact:false})).toBeVisible();await second.close();
+ await context.setOffline(true);await page.reload();await expect(page.getByRole('heading',{name:'Explore the mountain'})).toBeVisible({timeout:20000});await expect(page.locator('.trail-row')).toHaveCount(53);await expect(page.getByRole('button',{name:'Saved offline',exact:true})).toBeVisible();
+});

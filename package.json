@@ -1,0 +1,24 @@
+{
+  "name": "snowrun-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build && node scripts/service-worker.mjs",
+    "test": "tsx --test tests/*.test.ts",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "maplibre-gl": "6.16.0",
+    "sql.js": "^1.14.0"
+  },
+  "devDependencies": {
+    "@types/sql.js": "^1.4.9",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
+    "tsx": "^4.21.0",
+    "@types/node": "^24.0.0",
+    "@playwright/test": "^1.58.0"
+  }
+}

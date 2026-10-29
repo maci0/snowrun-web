@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import initSqlJs from 'sql.js';
+import {parseResort,route,distance,runStats,resample,gpx,type Trail} from '../src/domain.ts';
+const demo=JSON.parse(readFileSync(new URL('../public/assets/mt_hutt_demo.json',import.meta.url),'utf8'));
+const resort=parseResort(demo);
+test('recovers the bundled Mount Hutt demo without dropping runs or lifts',()=>{assert.equal(resort.trails.length,demo.features.length);assert.equal(resort.trails.filter(t=>t.type==='lift').length,5);assert.equal(resort.name,'Mount Hutt Ski Area');});
+test('geodesic distances and statistics use meters and km/h',()=>{assert.ok(Math.abs(distance([0,0],[0,.001])-111.195)<.1);const s=runStats([{lng:0,lat:0,altitude:100,time:0,speed:0},{lng:0,lat:.001,altitude:80,time:1000,speed:30}]);assert.equal(s.descent,20);assert.equal(s.topSpeed,30);assert.equal(s.snowmiles,1);});
+const trail=(id:string,start:number,end:number,difficulty:Trail['difficulty']='green',type:Trail['type']='run'):Trail=>({id,name:id,difficulty,type,groomed:true,coordinates:[[0,start],[0,end]],length:100});
+test('routing respects direction, difficulty, disconnected components and lifts',()=>{const ts=[trail('lift',0,.001,'black','lift'),trail('easy',.001,.002),trail('hard',.002,.003,'black'),trail('isolated',1,2)];assert.deepEqual(route(ts,'lift','easy','green')?.map(t=>t.id),['lift','easy']);assert.equal(route(ts,'easy','hard','blue'),null);assert.equal(route(ts,'easy','isolated','black'),null);assert.equal(route(ts,'easy','lift','green'),null);});
+test('map import rejects malformed coordinates, duplicate IDs and unknown data',()=>{assert.throws(()=>parseResort({}));assert.throws(()=>parseResort({type:'FeatureCollection',features:[{geometry:{type:'LineString',coordinates:[[0,91],[1,2]]}}]}));const duplicate={...demo,features:[demo.features[0],demo.features[0]]};assert.throws(()=>parseResort(duplicate));});
+test('resampling preserves endpoints and export escapes XML',()=>{const ps=resample([[0,0,100],[0,.001,80]],8);assert.deepEqual(ps.at(-1),[0,.001,80]);assert.ok(ps.length>10);assert.ok(gpx({id:'1',name:'A & B',resort:'x',started:0,duration:1,distance:1,topSpeed:1,descent:0,snowmiles:0,points:[]}).includes('A &amp; B'));});
+test('SQLite WASM database export survives reopen and parameterized values',async()=>{const SQL=await initSqlJs();const db=new SQL.Database();db.run('CREATE TABLE runs(id TEXT PRIMARY KEY,payload TEXT)');const payload=JSON.stringify({name:"O'Brien",points:[1,2]});db.run('INSERT INTO runs VALUES(?,?)',['1',payload]);const restored=new SQL.Database(db.export());assert.equal(restored.exec('SELECT payload FROM runs')[0].values[0][0],payload);restored.close();db.close();});
