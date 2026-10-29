@@ -34,3 +34,13 @@ test('saved map and SQLite survive offline reload',async({page,context})=>{
  await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise<void>(r=>navigator.serviceWorker.addEventListener('controllerchange',()=>r(),{once:true}));});await context.setOffline(true);await page.reload();await expect(page.getByRole('heading',{name:'Mt Hutt',exact:true})).toBeVisible({timeout:20000});
  await expect(page.getByRole('button',{name:'Saved offline',exact:true})).toBeVisible();
 });
+
+test('phone onboarding keeps progress, account content and map controls in native bounds',async({page})=>{
+ await page.setViewportSize({width:411,height:838});await page.goto('/');await page.getByRole('button',{name:'Get Started'}).click();
+ await page.getByRole('button',{name:'I survive but not black',exact:true}).click();await page.getByRole('button',{name:'Continue',exact:true}).click();
+ await page.getByRole('button',{name:'Fascination',exact:true}).click();await expect(page.locator('.demo-trails polyline[stroke="#7C3AED"]')).toHaveCount(2);
+ await page.getByRole('button',{name:'Continue',exact:true}).click();expect((await page.locator('.flow-progress').boundingBox())!.y).toBeLessThan(10);expect((await page.locator('.flow-account-content .yuki-face').boundingBox())!.y).toBeLessThan(130);
+ await page.getByRole('button',{name:'Continue without an account'}).click();expect((await page.locator('.flow-progress').boundingBox())!.y).toBeLessThan(10);
+ await page.getByRole('button',{name:"Let's go",exact:true}).click();expect((await page.locator('.guide-panel').boundingBox())!.height).toBeLessThan(360);expect((await page.getByRole('button',{name:'Search resorts'}).boundingBox())!.x).toBeLessThan(200);
+ await expect(page.getByRole('button',{name:'Center map'})).toBeInViewport();await page.getByRole('button',{name:'Sign in',exact:true}).click();const password=page.locator('input[name=password]');await password.fill('local example');await page.getByRole('button',{name:'Show password'}).click();await expect(password).toHaveAttribute('type','text');await page.getByRole('button',{name:'Hide password'}).click();await expect(password).toHaveAttribute('type','password');
+});
