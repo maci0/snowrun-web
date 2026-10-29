@@ -1,11 +1,11 @@
 export type Coord = [number, number, number?];
-export type Difficulty = 'green' | 'blue' | 'red' | 'black';
+export type Difficulty = 'green' | 'blue' | 'red' | 'black' | 'unrated';
 export type Trail = { id: string; name: string; type: 'run' | 'lift'; difficulty: Difficulty; groomed: boolean; coordinates: Coord[]; length: number };
 export type Resort = { slug: string; name: string; trails: Trail[] };
 export type Point = { lng: number; lat: number; altitude: number; time: number; speed: number };
 export type Run = { id: string; resort: string; name: string; started: number; duration: number; points: Point[]; distance: number; topSpeed: number; descent: number; snowmiles: number };
-const levels: Record<string, Difficulty> = { novice: 'green', easy: 'green', beginner: 'green', intermediate: 'blue', advanced: 'red', difficult: 'red', expert: 'black', freeride: 'black', extreme: 'black', green:'green', blue:'blue', red:'red', black:'black' };
-export const ranks: Record<Difficulty, number> = {green:0,blue:1,red:2,black:3};
+const levels: Record<string, Difficulty> = { novice: 'green', easy: 'green', beginner: 'green', intermediate: 'blue', advanced: 'red', difficult: 'red', expert: 'black', freeride: 'black', extreme: 'black', green:'green', blue:'blue', red:'red', black:'black',unrated:'unrated' };
+export const ranks: Record<Difficulty, number> = {green:0,blue:1,red:2,black:3,unrated:3};
 export function distance(a: Coord, b: Coord) {
   const rad = Math.PI / 180, dlat=(b[1]-a[1])*rad, dlng=(b[0]-a[0])*rad;
   const h=Math.sin(dlat/2)**2+Math.cos(a[1]*rad)*Math.cos(b[1]*rad)*Math.sin(dlng/2)**2;
@@ -29,8 +29,8 @@ export function parseResort(value: unknown): Resort {
     });
     const p=f.properties??{};
     const type=p.type==='lift'||p.aerialway?'lift':'run';
-    // shortcut: unclassified runs are expert-only, replace with a verified difficulty when available.
-    trails.push({id:String(p.id??`trail-${i}`),name:String(p.name??`Unnamed ${type}`).slice(0,160),type,difficulty:levels[String(p.difficulty??p['piste:difficulty'])]??'black',groomed:p.groomed===true,coordinates:coords,length:pathLength(coords)});
+    // Native UNRATED renders gray and uses black-run routing restrictions.
+    trails.push({id:String(p.id??`trail-${i}`),name:String(p.name??`Unnamed ${type}`).slice(0,160),type,difficulty:levels[String(p.difficulty??p['piste:difficulty'])]??'unrated',groomed:p.groomed===true,coordinates:coords,length:pathLength(coords)});
   }
   if(!trails.length) throw Error('No LineString trails were found.');
   if(new Set(trails.map(t=>t.id)).size!==trails.length)throw Error('Trail IDs must be unique.');

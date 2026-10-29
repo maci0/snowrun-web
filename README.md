@@ -21,9 +21,11 @@ The production build is a static site in `dist/`, using relative asset paths for
 - Simulated GPS recording, pause/resume, local recovery checkpoints, and run statistics.
 - SQLite compiled to WASM via sql.js, persisted to IndexedDB.
 - Journal, elevation profile, replay at 2×/8×/16× and GPX export.
-- Local snowmile milestones, simulated group preview, profile and units.
+- Local snowmiles, profile, units and reconstructed account/settings screens.
 - GeoJSON resort import, saved trail maps, SQLite backup export.
 - Service worker caches the app and bundled map for offline use after the first visit. Basemap tiles require a connection and are not bulk cached.
+
+Screen evidence and verification are documented in [PARITY.md](PARITY.md).
 
 ## Parity limits
 
@@ -33,4 +35,4 @@ SQLite lives in browser memory while open and is saved as database bytes in Inde
 
 ## Assets and attribution
 
-Original SnowRun artwork, video and demo map retain their respective ownership and license terms; this repository does not relicense them. No APK, original DEX, decompiled Java, account credentials or private user database is included. Trail data credits from the original app: OpenSkiData/OpenSkiMap, © OpenStreetMap contributors (ODbL), Skimap.org, Who's On First and Mapterhorn. Basemap © OpenStreetMap contributors. MapLibre GL JS and sql.js retain their upstream licenses.
+Original SnowRun artwork, video and demo map retain their respective ownership and license terms; this repository does not relicense them. No APK, original DEX, decompiled Java, account credentials or private user database is included. Trail data credits from the original app: OpenSkiData/OpenSkiMap, © OpenStreetMap contributors (ODbL), Skimap.org, Who's On First and Mapterhorn. Original Positron vector styles: OpenFreeMap/OpenMapTiles and CARTO, © OpenStreetMap contributors. MapLibre GL JS and sql.js retain their upstream licenses.

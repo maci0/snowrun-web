@@ -1,0 +1,2 @@
+// Recovered from Android m46.java, Difficulty.java and vl3.java; keep map and UI values in sync.
+export const palette={navy:'#0B2F5E',orange:'#F97316',coral:'#E85D3A',cream:'#FAF8F5',creamEnd:'#F5F0EB',text:'#1E293B',muted:'#64748B',mutedLight:'#94A3B8',soft:'#F1F5F9',white:'#FFFFFF',green:'#4CAF50',blue:'#2196F3',red:'#F44336',black:'#212121',unrated:'#9E9E9E',lift:'#212121',location:'#3B82F6',route:'#7C3AED',routeOutline:'#1A0033',ungroomed:'#2ECCD4'} as const;
