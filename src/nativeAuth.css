@@ -1,0 +1,25 @@
+/* kz5.java:199–245 and fc2.java:37–51: the header is a quadratic path in raw
+   Android pixels. At 420 dpi its endpoints are 15.238 dp above the rectangle
+   bottom and its control point 11.429 dp below it. */
+.native-auth{container-type:inline-size}
+.native-auth .auth-art{height:177px;border-radius:0;background:linear-gradient(calc(90deg + atan2(229px,100cqw)),#0b2f5e,#1e3a8a);background-size:100% calc(100% + 52px);background-position:left bottom;mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 411 177' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 0H411V161.7619Q205.5 188.4286 0 161.7619Z'/%3E%3C/svg%3E");mask-size:100% 100%;mask-repeat:no-repeat}
+.native-auth.auth-signup .auth-art{height:131px;background-image:linear-gradient(calc(90deg + atan2(183px,100cqw)),#0b2f5e,#1e3a8a);mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 411 131' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 0H411V115.7619Q205.5 142.4286 0 115.7619Z'/%3E%3C/svg%3E")}
+.native-auth:not(.auth-signup) .auth-body>h1{top:-3px}
+.native-auth .auth-field>span{gap:12px}
+.native-auth:not(.auth-signup) .auth-field:has(input[name=email])>span{padding-bottom:2px}
+.native-auth:not(.auth-signup) .auth-field:has(input[name=password]){margin-top:21px}
+.native-auth:not(.auth-signup) .auth-field:has(input[name=password])>span{padding-bottom:6px}
+.native-auth .auth-options>button{font-size:13px;font-weight:500;transform:translateY(4px)}
+.native-auth .auth-divider{margin-top:24px}
+.native-auth .auth-body .auth-register{font-size:13px}
+.native-auth .auth-submit:disabled{background:#e8e9eb;color:#b0b8c5}
+.native-auth.auth-signup .auth-body{padding-top:6px}
+.native-auth.auth-signup .auth-body>p{margin-bottom:29px}
+.native-auth.auth-signup .auth-field>span{padding-bottom:3px}
+.native-auth.auth-signup .auth-field:has(input[name=referral]){margin-top:25px}
+/* u40.e: the reset screen is edge-to-edge. Its 24 dp margins and 56 dp field
+   must be compared from Android y=0, not the inset auth/map crop y=136 px. */
+.reset-password{background:linear-gradient(#faf8f5,#f5f0eb)}
+.reset-password .reset-email{border-radius:14px;border-color:#79747e}
+.reset-password .reset-email>svg{flex:none}
+.reset-password .auth-submit:disabled{background:#1d1b201f;color:#b0b8c5}

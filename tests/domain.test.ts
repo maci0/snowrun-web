@@ -18,3 +18,14 @@ test('native guide merges named segments and retains anonymous features',()=>{co
 test('native overview uses lift altitudes to orient the map',()=>{const view=overview(parseResort(demo).trails)!;assert.ok(Math.abs(view.bearing-336.178082)<.00001);assert.ok(Math.abs(view.center[0]-171.536303066)<.00000001);assert.ok(Math.abs(view.center[1]+43.492263986)<.00000001);assert.equal(overview([]),null);});
 
 test('unspecified grooming does not acquire an ungroomed map overlay',()=>{const map=parseResort(demo);const unknown=demo.features.find((f:{properties:{groomed?:boolean}})=>f.properties.groomed===undefined);assert.equal(map.trails.find(t=>t.id===unknown.properties.id)!.groomed,null);const explicit=demo.features.find((f:{properties:{groomed?:boolean}})=>f.properties.groomed===false);assert.equal(map.trails.find(t=>t.id===explicit.properties.id)!.groomed,false);});
+
+
+test('native navigation names precede sorting and duplicate display names collapse',async()=>{
+ const {navigationTrails,trailDisplayName}=await import('../src/domain.ts');
+ const rows=resort.trails;const result=navigationTrails(rows);
+ assert.equal(new Set(result.map(trailDisplayName)).size,result.length);
+ assert.equal(result[0].type,'lift');
+ assert.ok(result.some(t=>trailDisplayName(t)==='Blue Run'));
+ assert.ok(result.findIndex(t=>trailDisplayName(t)==='Blue Run')<result.findIndex(t=>trailDisplayName(t)==='Bobs Knob'));
+ assert.equal(result.filter(t=>trailDisplayName(t)==='Blue Run').length,1);
+});

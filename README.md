@@ -20,7 +20,7 @@ The production build is a static site in `dist/`, using relative asset paths for
 
 - Original welcome video, illustration, launcher and Yuki assets, recovered filled icons and five native tutorial overlays.
 - Mount Hutt demo: 48 runs and 5 lifts, searchable and colored by difficulty.
-- Local directed routing with difficulty and grooming preferences.
+- Junction-based local routing with native lift/run costs, station links, GPS snapping, difficulty alternatives and grooming preferences.
 - Simulated GPS recording, pause/resume, local recovery checkpoints, and run statistics.
 - SQLite compiled to WASM via sql.js, persisted to IndexedDB.
 - Journal, elevation profile, replay at 2×/8×/16× and GPX export.
@@ -32,7 +32,7 @@ Screen evidence and verification are documented in [PARITY.md](PARITY.md).
 
 ## Parity limits
 
-This is a browser reconstruction, not an official client or a full port of SnowRun's private services. Unobserved Android screens are reconstructed from static evidence and cannot be claimed pixel-identical. Some APK methods could not be decompiled. Routing connects compatible trail endpoints within 100 m and is an approximate demonstration, not authoritative mountain navigation. Dataset closure status is not current. GPS and friends are simulated. Reward balances are local. Login, purchases, live group sharing, native Health Connect/Wear OS, and server synchronization are not connected. No production SnowRun API requests are made.
+This is a browser reconstruction, not an official client or a full port of SnowRun's private services. Unobserved Android screens are reconstructed from static evidence and cannot be claimed pixel-identical. Some APK methods could not be decompiled. Routing reconstructs native junctions, station links and cost multipliers from static code. Direction confidence and preview grouping remain incomplete; route choices are a demonstration, not authoritative mountain navigation. Dataset closure status is not current. GPS and friends are simulated. Reward balances are local. Login, purchases, live group sharing, native Health Connect/Wear OS, and server synchronization are not connected. No production SnowRun API requests are made.
 
 SQLite lives in browser memory while open and is saved as database bytes in IndexedDB on mutations. Browser data removal also removes the journal. Export backups from Me. Use one tab at a time; opening multiple writable tabs is prevented where Web Locks is supported. Private browsing can discard data when the session ends.
 

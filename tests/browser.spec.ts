@@ -5,7 +5,7 @@ async function enter(page:Page){
  await page.getByRole('button',{name:'I survive but not black',exact:true}).click();await page.getByRole('button',{name:'Continue',exact:true}).click();
  await page.getByRole('button',{name:'Fascination',exact:true}).click();await page.getByRole('button',{name:'Continue',exact:true}).click();
  await page.getByRole('button',{name:'Continue without an account'}).click();await page.getByRole('button',{name:"Let's go",exact:true}).click();
- await expect(page.getByRole('heading',{name:'Mt Hutt',exact:true})).toBeVisible();await dismissTips(page);
+ await dismissTips(page);await expect(page.getByRole('heading',{name:'Mt Hutt',exact:true})).toBeVisible();
 }
 async function yuki(page:Page,name:string){await page.getByRole('button',{name:'Open Yuki menu'}).click();await dismissTips(page);await page.getByRole('button',{name,exact:true}).click();}
 test('native colors, original vector styles, simulated recording and saved journal',async({page})=>{
@@ -13,9 +13,9 @@ test('native colors, original vector styles, simulated recording and saved journ
  await enter(page);
  await expect(page.locator('.native-banner .primary')).toHaveCSS('background-color','rgb(249, 115, 22)');
  await expect(page.locator('.guide-title h1')).toHaveCSS('color','rgb(11, 47, 94)');
- await page.getByRole('button',{name:'Navigate',exact:true}).click();await dismissTips(page);await expect(page.locator('.trail-row')).toHaveCount(53);
+ await page.getByRole('button',{name:'Navigate',exact:true}).click();await dismissTips(page);await expect(page.locator('.trail-row')).toHaveCount(40);
  await page.getByRole('textbox',{name:'Search runs and lifts'}).fill('Summit');await expect(page.locator('.trail-row')).toHaveCount(1);
- await page.getByRole('button',{name:'Cancel',exact:true}).click();await page.getByRole('button',{name:'Start Run',exact:true}).click();await expect(page.getByRole('region',{name:'Current recording'})).toBeVisible();await page.waitForTimeout(2100);
+ await page.getByRole('textbox',{name:'Search runs and lifts'}).fill('Magic Carpet');await page.locator('.trail-row').click();await expect(page.getByRole('button',{name:'Start',exact:true})).toBeEnabled();await expect(page.locator('.native-route-steps')).toContainText('Hoods Hollow');await page.getByRole('button',{name:'Challenging',exact:true}).click();await expect(page.getByRole('button',{name:'Challenging',exact:true})).toHaveAttribute('aria-pressed','true');await page.getByRole('button',{name:'Best route',exact:true}).click();await expect(page.getByRole('button',{name:'Best route',exact:true})).toHaveAttribute('aria-pressed','true');await page.getByRole('button',{name:'Cancel',exact:true}).click();await page.getByRole('button',{name:'Start Run',exact:true}).click();await expect(page.getByRole('region',{name:'Current recording'})).toBeVisible();await page.waitForTimeout(2100);
  await page.getByRole('button',{name:'Pause',exact:true}).click();await page.getByRole('button',{name:'Finish run'}).click();await expect(page.locator('.na-run-detail')).toBeVisible();await expect(page.locator('#map')).toHaveAttribute('aria-busy','false');await expect(page.locator('#replay-speed')).toBeHidden();await page.getByRole('button',{name:'2x',exact:true}).click();await expect(page.getByRole('button',{name:'2x',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.reload();await yuki(page,'Journal');await expect(page.locator('.na-native-run')).toHaveCount(1);
  await page.getByRole('button',{name:'Back',exact:true}).click();await yuki(page,'Me');await page.getByRole('button',{name:'App Settings'}).click();await expect(page.getByRole('heading',{name:'Settings',exact:true})).toBeVisible();

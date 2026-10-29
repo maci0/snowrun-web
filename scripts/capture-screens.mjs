@@ -2,7 +2,7 @@ import {chromium,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 const folder=process.env.SCREENSHOT_DIR||'../analysis/web-screens';await mkdir(folder,{recursive:true});
 const browser=await chromium.launch({args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});const page=await browser.newPage({viewport:{width:411,height:838},deviceScaleFactor:1});
-const capture=async options=>{await page.locator('img').evaluateAll(images=>Promise.all(images.map(image=>image.decode())));return page.screenshot(options);};
+const capture=async options=>{await page.evaluate(()=>document.fonts.ready);await page.mouse.move(410,837);await page.locator('img').evaluateAll(images=>Promise.all(images.map(image=>image.decode())));return page.screenshot(options);};
 const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.BASE_URL||'http://localhost:5178');
 await page.getByRole('button',{name:'Get Started'}).click();await page.getByRole('heading',{name:'What kind of skier or snowboarder are you?'}).waitFor();await page.evaluate(()=>document.fonts.ready);await capture({path:folder+'/onboarding-skill.png'});
 await page.getByRole('button',{name:'I survive but not black'}).click();await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:'Tap a run to see your route'}).waitFor();await capture({path:folder+'/onboarding-demo.png'});

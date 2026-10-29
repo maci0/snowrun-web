@@ -5,3 +5,16 @@
 .flow-benefits>div{border-radius:14px;min-height:64px;gap:14px}.flow-benefits p{line-height:normal}.flow-benefits strong{display:block;font-weight:600;line-height:18px}.flow-benefits small{line-height:16px;margin-top:2px}.flow-benefits>div>span svg{width:20px;height:20px}.flow-account-content .flow-email svg{width:18px;height:18px}.flow-signin{bottom:66px}.flow-done-content h1{margin-bottom:8px}.flow-done-content>p{line-height:20px}.flow-route-summary{position:relative}.demo-route-dots{position:absolute;right:16px;top:36px;display:flex;gap:5px}.demo-route-dots i{width:8px;height:8px;border-radius:50%;background:#22C55E}.demo-route-dots i+i{background:#3B82F6}.yuki-face{animation:yuki-breathe 6s cubic-bezier(.42,0,.58,1) infinite}.yuki-face g:first-of-type{animation:yuki-blink 5s infinite;transform-origin:50px 47px}@keyframes yuki-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes yuki-blink{0%,91%,97%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}@media(prefers-reduced-motion:reduce){.yuki-face,.yuki-face g:first-of-type{animation:none}}
 
 .flow-skill-title{margin-top:94px;margin-bottom:33px}.flow-done-content{padding-top:99px}@media(max-height:720px){.flow-skill-title{margin-top:62px}.flow-done-content{padding-top:53px}}
+
+/* Native capture offsets and surfaces: d05.java, k05.java, k10.java canvas. */
+.flow-choice{box-shadow:none}
+.native-flow .flow-demo-title{margin-top:54px}
+.flow-account-content{padding-top:114px}
+.flow-account-content h1{margin-top:16px}
+.flow-signin{bottom:52px}
+.flow-signin button{color:#0B2F5E}
+.flow-done-content{padding-top:102px}
+.flow-done-content h1{margin-top:21px}
+.flow-benefits>div{gap:14px}
+.yuki-face{filter:none}
+@media(max-height:720px){.flow-account-content{padding-top:69px}.flow-done-content{padding-top:56px}}

@@ -30,7 +30,7 @@ export function parseResort(value: unknown): Resort {
     const p=f.properties??{};
     const type=p.type==='lift'||p.aerialway?'lift':'run';
     // Native UNRATED renders gray and uses black-run routing restrictions.
-    trails.push({id:String(p.id??`trail-${i}`),name:String(p.name??`Unnamed ${type}`).slice(0,160),type,difficulty:levels[String(p.difficulty??p['piste:difficulty'])]??'unrated',groomed:typeof p.groomed==='boolean'?p.groomed:null,coordinates:coords,length:pathLength(coords)});
+    trails.push({id:String(p.id??`trail-${i}`),name:String(p.name??'').slice(0,160),type,difficulty:levels[String(p.difficulty??p['piste:difficulty'])]??'unrated',groomed:typeof p.groomed==='boolean'?p.groomed:null,coordinates:coords,length:pathLength(coords)});
   }
   if(!trails.length) throw Error('No LineString trails were found.');
   if(new Set(trails.map(t=>t.id)).size!==trails.length)throw Error('Trail IDs must be unique.');
@@ -98,3 +98,7 @@ export function overview(trails:Trail[]){
  const bearing=(Math.atan2(Math.sin(dlng)*Math.cos(high[1]*rad),Math.sin(high[1]*rad)*Math.cos(low[1]*rad)-Math.cos(dlng)*Math.cos(high[1]*rad)*Math.sin(low[1]*rad))/rad+360)%360;
  return {bearing,center:[high[0]*.7+low[0]*.3,high[1]*.7+low[1]*.3] as [number,number]};
 }
+
+// ResortSegment.getDisplayName and g04.f: fallbacks precede sorting and display-name deduplication.
+export function trailDisplayName(trail:Trail){return trail.name.trim()||(trail.type==='lift'?'Lift':trail.difficulty[0].toUpperCase()+trail.difficulty.slice(1)+' Run');}
+export function navigationTrails(trails:Trail[]){const seen=new Set<string>();return [...trails].sort((a,b)=>Number(b.type==='lift')-Number(a.type==='lift')||trailDisplayName(a).localeCompare(trailDisplayName(b))).filter(trail=>{const name=trailDisplayName(trail);if(seen.has(name))return false;seen.add(name);return true;});}
