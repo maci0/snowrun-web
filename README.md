@@ -9,19 +9,22 @@ npm ci
 npm run dev
 npm test
 npm run build
+# With the dev server running:
+npx playwright test
+node scripts/capture-screens.mjs
 ```
 
 The production build is a static site in `dist/`, using relative asset paths for GitHub Pages. The Pages workflow deploys `main`.
 
 ## Browser features
 
-- Original welcome video, illustration, launcher and Yuki assets.
+- Original welcome video, illustration, launcher and Yuki assets, recovered filled icons and five native tutorial overlays.
 - Mount Hutt demo: 48 runs and 5 lifts, searchable and colored by difficulty.
 - Local directed routing with difficulty and grooming preferences.
 - Simulated GPS recording, pause/resume, local recovery checkpoints, and run statistics.
 - SQLite compiled to WASM via sql.js, persisted to IndexedDB.
 - Journal, elevation profile, replay at 2×/8×/16× and GPX export.
-- Local snowmiles, profile, units and reconstructed account/settings screens.
+- Source-backed layouts for populated journal/trips, season summary, map-based comparison/replay, alternate questionnaire, rewards, friends, profile, account, settings, permissions, referrals, membership, snowmiles and SnowMarket. Local units and preferences persist in SQLite.
 - GeoJSON resort import, saved trail maps, SQLite backup export.
 - Service worker caches the app and bundled map for offline use after the first visit. Basemap tiles require a connection and are not bulk cached.
 
@@ -35,4 +38,4 @@ SQLite lives in browser memory while open and is saved as database bytes in Inde
 
 ## Assets and attribution
 
-Original SnowRun artwork, video and demo map retain their respective ownership and license terms; this repository does not relicense them. No APK, original DEX, decompiled Java, account credentials or private user database is included. Trail data credits from the original app: OpenSkiData/OpenSkiMap, © OpenStreetMap contributors (ODbL), Skimap.org, Who's On First and Mapterhorn. Original Positron vector styles: OpenFreeMap/OpenMapTiles and CARTO, © OpenStreetMap contributors. MapLibre GL JS and sql.js retain their upstream licenses.
+Original SnowRun artwork, video and demo map retain their respective ownership and license terms; this repository does not relicense them. No APK, original DEX, decompiled Java, account credentials or private user database is included. Trail data credits from the original app: OpenSkiData/OpenSkiMap, © OpenStreetMap contributors (ODbL), Skimap.org, Who's On First and Mapterhorn. Original Positron vector styles: OpenFreeMap/OpenMapTiles and CARTO, © OpenStreetMap contributors. The renamed Android emoji subset is under SIL OFL 1.1; see `public/assets/EMOJI-LICENSE.txt`. MapLibre GL JS and sql.js retain their upstream licenses.

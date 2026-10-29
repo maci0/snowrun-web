@@ -1,6 +1,6 @@
 export type Coord = [number, number, number?];
 export type Difficulty = 'green' | 'blue' | 'red' | 'black' | 'unrated';
-export type Trail = { id: string; name: string; type: 'run' | 'lift'; difficulty: Difficulty; groomed: boolean; coordinates: Coord[]; length: number };
+export type Trail = { id: string; name: string; type: 'run' | 'lift'; difficulty: Difficulty; groomed: boolean|null; coordinates: Coord[]; length: number };
 export type Resort = { slug: string; name: string; trails: Trail[] };
 export type Point = { lng: number; lat: number; altitude: number; time: number; speed: number };
 export type Run = { id: string; resort: string; name: string; started: number; duration: number; points: Point[]; distance: number; topSpeed: number; descent: number; snowmiles: number };
@@ -30,7 +30,7 @@ export function parseResort(value: unknown): Resort {
     const p=f.properties??{};
     const type=p.type==='lift'||p.aerialway?'lift':'run';
     // Native UNRATED renders gray and uses black-run routing restrictions.
-    trails.push({id:String(p.id??`trail-${i}`),name:String(p.name??`Unnamed ${type}`).slice(0,160),type,difficulty:levels[String(p.difficulty??p['piste:difficulty'])]??'unrated',groomed:p.groomed===true,coordinates:coords,length:pathLength(coords)});
+    trails.push({id:String(p.id??`trail-${i}`),name:String(p.name??`Unnamed ${type}`).slice(0,160),type,difficulty:levels[String(p.difficulty??p['piste:difficulty'])]??'unrated',groomed:typeof p.groomed==='boolean'?p.groomed:null,coordinates:coords,length:pathLength(coords)});
   }
   if(!trails.length) throw Error('No LineString trails were found.');
   if(new Set(trails.map(t=>t.id)).size!==trails.length)throw Error('Trail IDs must be unique.');
@@ -82,3 +82,19 @@ export function runStats(points:Point[]){
 }
 export function formatTime(seconds:number){return `${Math.floor(seconds/60).toString().padStart(2,'0')}:${Math.floor(seconds%60).toString().padStart(2,'0')}`;}
 export function gpx(run:Run){const escape=(s:string)=>s.replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[c]!));return `<?xml version="1.0"?><gpx version="1.1" creator="SnowRun Web" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${escape(run.name)}</name><trkseg>${run.points.map(p=>`<trkpt lat="${p.lat}" lon="${p.lng}"><ele>${p.altitude}</ele><time>${new Date(p.time).toISOString()}</time></trkpt>`).join('')}</trkseg></trk></gpx>`;}
+
+// kg5.java/th5.java: group named features and display the hardest classification.
+export function guideRuns(trails:Trail[]):Trail[]{
+ const groups=new Map<string,Trail[]>();
+ for(const trail of trails){if(trail.type==='lift')continue;const name=trail.name.trim().replace(/\s+/g,' ').normalize('NFKD').replace(/\p{Mn}+/gu,'').normalize('NFC').toUpperCase().toLowerCase();const key=name||trail.id;groups.set(key,[...(groups.get(key)??[]),trail]);}
+ return [...groups.values()].map(group=>{const hardest=group.reduce((a,b)=>ranks[b.difficulty]>ranks[a.difficulty]||ranks[b.difficulty]===ranks[a.difficulty]&&b.difficulty==='black'?b:a);const longest=group.reduce((a,b)=>b.length>a.length?b:a);return {...longest,difficulty:hardest.difficulty};});
+}
+// ie5.java: lift altitude endpoints determine the resort's overview orientation.
+export function overview(trails:Trail[]){
+ const lifts=trails.filter(t=>t.type==='lift'&&Number.isFinite(t.coordinates[0][2])&&Number.isFinite(t.coordinates.at(-1)![2]));if(lifts.length<2)return null;
+ const ends=lifts.map(t=>[t.coordinates[0],t.coordinates.at(-1)!].sort((a,b)=>a[2]!-b[2]!));
+ const mean=(i:number,axis:number)=>ends.reduce((sum,p)=>sum+p[i][axis]!,0)/ends.length;
+ const low=[mean(0,0),mean(0,1)],high=[mean(1,0),mean(1,1)],rad=Math.PI/180,dlng=(high[0]-low[0])*rad;
+ const bearing=(Math.atan2(Math.sin(dlng)*Math.cos(high[1]*rad),Math.sin(high[1]*rad)*Math.cos(low[1]*rad)-Math.cos(dlng)*Math.cos(high[1]*rad)*Math.sin(low[1]*rad))/rad+360)%360;
+ return {bearing,center:[high[0]*.7+low[0]*.3,high[1]*.7+low[1]*.3] as [number,number]};
+}

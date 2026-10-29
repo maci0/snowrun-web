@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import initSqlJs from 'sql.js';
-import {parseResort,route,distance,runStats,resample,gpx,type Trail} from '../src/domain.ts';
+import {guideRuns,overview,parseResort,route,distance,runStats,resample,gpx,type Trail} from '../src/domain.ts';
 const demo=JSON.parse(readFileSync(new URL('../public/assets/mt_hutt_demo.json',import.meta.url),'utf8'));
 const resort=parseResort(demo);
 test('recovers the bundled Mount Hutt demo without dropping runs or lifts',()=>{assert.equal(resort.trails.length,demo.features.length);assert.equal(resort.trails.filter(t=>t.type==='lift').length,5);assert.equal(resort.name,'Mount Hutt Ski Area');});
@@ -13,3 +13,8 @@ test('map import rejects malformed coordinates, duplicate IDs and unknown data',
 test('resampling preserves endpoints and export escapes XML',()=>{const ps=resample([[0,0,100],[0,.001,80]],8);assert.deepEqual(ps.at(-1),[0,.001,80]);assert.ok(ps.length>10);assert.ok(gpx({id:'1',name:'A & B',resort:'x',started:0,duration:1,distance:1,topSpeed:1,descent:0,snowmiles:0,points:[]}).includes('A &amp; B'));});
 test('SQLite WASM database export survives reopen and parameterized values',async()=>{const SQL=await initSqlJs();const db=new SQL.Database();db.run('CREATE TABLE runs(id TEXT PRIMARY KEY,payload TEXT)');const payload=JSON.stringify({name:"O'Brien",points:[1,2]});db.run('INSERT INTO runs VALUES(?,?)',['1',payload]);const restored=new SQL.Database(db.export());assert.equal(restored.exec('SELECT payload FROM runs')[0].values[0][0],payload);restored.close();db.close();});
 test('unrated trails retain native gray classification and expert routing restrictions',()=>{const m=parseResort({type:'FeatureCollection',features:[{type:'Feature',properties:{id:'unknown',type:'run',name:'Unknown'},geometry:{type:'LineString',coordinates:[[0,0],[0,.001]]}}]});assert.equal(m.trails[0].difficulty,'unrated');assert.equal(route(m.trails,'unknown','unknown','blue'),null);assert.equal(route(m.trails,'unknown','unknown','black')?.length,1);});
+
+test('native guide merges named segments and retains anonymous features',()=>{const runs=guideRuns(parseResort(demo).trails);const counts=Object.fromEntries(['green','blue','red','black','unrated'].map(d=>[d,runs.filter(t=>t.difficulty===d).length]));assert.deepEqual(counts,{green:6,blue:12,red:12,black:6,unrated:9});});
+test('native overview uses lift altitudes to orient the map',()=>{const view=overview(parseResort(demo).trails)!;assert.ok(Math.abs(view.bearing-336.178082)<.00001);assert.ok(Math.abs(view.center[0]-171.536303066)<.00000001);assert.ok(Math.abs(view.center[1]+43.492263986)<.00000001);assert.equal(overview([]),null);});
+
+test('unspecified grooming does not acquire an ungroomed map overlay',()=>{const map=parseResort(demo);const unknown=demo.features.find((f:{properties:{groomed?:boolean}})=>f.properties.groomed===undefined);assert.equal(map.trails.find(t=>t.id===unknown.properties.id)!.groomed,null);const explicit=demo.features.find((f:{properties:{groomed?:boolean}})=>f.properties.groomed===false);assert.equal(map.trails.find(t=>t.id===explicit.properties.id)!.groomed,false);});
